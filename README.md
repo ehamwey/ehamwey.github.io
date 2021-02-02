@@ -17,6 +17,7 @@ Syntax highlighted code block
 
 - Bulleted
 - List
+- New homework assignment added.
 
 1. Numbered
 2. List
