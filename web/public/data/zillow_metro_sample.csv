@@ -1,0 +1,6 @@
+RegionID,SizeRank,RegionName,RegionType,StateName,State,Metro,CountyName,2024-10-31,2024-11-30
+31068,1,"New York-Newark-Jersey City, NY-NJ-PA",msa,"New York",NY,"New York-Newark-Jersey City, NY-NJ-PA",,650000,652000
+16974,2,"Los Angeles-Long Beach-Anaheim, CA",msa,California,CA,"Los Angeles-Long Beach-Anaheim, CA",,950000,948500
+19123,3,"Chicago-Naperville-Elgin, IL-IN-WI",msa,Illinois,IL,"Chicago-Naperville-Elgin, IL-IN-WI",,340000,341200
+42660,4,"Seattle-Tacoma-Bellevue, WA",msa,Washington,WA,"Seattle-Tacoma-Bellevue, WA",,780000,784000
+36404,5,"Austin-Round Rock-Georgetown, TX",msa,Texas,TX,"Austin-Round Rock-Georgetown, TX",,520000,519000

@@ -1,0 +1,37 @@
+{
+  "New York-Newark-Jersey City, NY-NJ-PA": {
+    "score": 92,
+    "serviceIntensity": 98,
+    "connectivity": 90,
+    "span": 95,
+    "destinationAccess": 85
+  },
+  "Los Angeles-Long Beach-Anaheim, CA": {
+    "score": 58,
+    "serviceIntensity": 55,
+    "connectivity": 60,
+    "span": 62,
+    "destinationAccess": 55
+  },
+  "Chicago-Naperville-Elgin, IL-IN-WI": {
+    "score": 71,
+    "serviceIntensity": 75,
+    "connectivity": 70,
+    "span": 78,
+    "destinationAccess": 62
+  },
+  "Seattle-Tacoma-Bellevue, WA": {
+    "score": 63,
+    "serviceIntensity": 60,
+    "connectivity": 62,
+    "span": 70,
+    "destinationAccess": 60
+  },
+  "Austin-Round Rock-Georgetown, TX": {
+    "score": 42,
+    "serviceIntensity": 38,
+    "connectivity": 45,
+    "span": 50,
+    "destinationAccess": 40
+  }
+}
