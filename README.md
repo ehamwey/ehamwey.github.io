@@ -28,3 +28,9 @@ npm run preview
 ### Data formats (current prototype)
 - **Zillow CSV**: any Zillow Research time-series CSV that includes `RegionName` plus date columns like `YYYY-MM-DD`.
 - **Transit JSON**: an object keyed by market name → `{ score, serviceIntensity?, connectivity?, span?, destinationAccess? }`.
+
+### Transit score (easy mode: ACS)
+The webapp can generate a **proxy transit score** automatically using **ACS 5-year table B08301** (commute mode share):
+- Fetches metro-level totals + public-transit commuters from the Census API
+- Computes % commuting by transit
+- Normalizes it into a 0–100 score (and lets you download the resulting JSON)

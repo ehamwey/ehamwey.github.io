@@ -4,6 +4,8 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import { parseZillowResearchCsv, type ZillowMarketDatum } from './lib/zillow'
 import { readFileAsText } from './lib/files'
 import { type TransitScore, coerceTransitScoreMap } from './lib/transit'
+import { fetchAcs5MetroCommuteShare, scoreFromPctPublicTransit } from './lib/acs'
+import { downloadJsonFile } from './lib/download'
 
 function App() {
   const [zillowRows, setZillowRows] = useState<ZillowMarketDatum[]>([])
@@ -12,6 +14,9 @@ function App() {
   const [error, setError] = useState<string>('')
   const [minTransit, setMinTransit] = useState<number>(0)
   const [maxZhvi, setMaxZhvi] = useState<number | ''>('')
+  const [acsYear, setAcsYear] = useState<number>(2023)
+  const [acsLoadedCount, setAcsLoadedCount] = useState<number>(0)
+  const [acsMatchedCount, setAcsMatchedCount] = useState<number>(0)
 
   async function loadSamples() {
     setError('')
@@ -36,6 +41,31 @@ function App() {
       setStatus(`Loaded ${parsed.length} markets from sample data.`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error while loading sample data.')
+      setStatus('')
+    }
+  }
+
+  async function loadAcsAndGenerateTransitScores() {
+    setError('')
+    setStatus(`Loading ACS ${acsYear} 5-year (B08301) metro commute data…`)
+    try {
+      const rows = await fetchAcs5MetroCommuteShare({ year: acsYear })
+      const scoreByMarket = scoreFromPctPublicTransit(rows)
+      setAcsLoadedCount(Object.keys(scoreByMarket).length)
+
+      const nextTransit: Record<string, TransitScore> = {}
+      let matched = 0
+      for (const z of zillowRows) {
+        const score = scoreByMarket[z.market]
+        if (score === undefined) continue
+        matched++
+        nextTransit[z.market] = { score, serviceIntensity: score }
+      }
+      setAcsMatchedCount(matched)
+      setTransitByMarket(nextTransit)
+      setStatus(`Generated transit proxy scores from ACS. Matched ${matched}/${zillowRows.length} Zillow markets.`)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load ACS data.')
       setStatus('')
     }
   }
@@ -120,6 +150,55 @@ function App() {
             />
             <div className="hint">
               Recommended: Zillow “Metro” dataset (ZHVI). This prototype expects a “RegionName” column plus date columns.
+            </div>
+          </div>
+
+          <div className="field">
+            <label className="label">Transit score (ACS proxy)</label>
+            <div className="filters">
+              <label className="filter">
+                <span>ACS year (5-year)</span>
+                <input
+                  className="input"
+                  type="number"
+                  min={2010}
+                  max={2100}
+                  value={acsYear}
+                  onChange={(e) => setAcsYear(Number(e.target.value))}
+                />
+              </label>
+              <div className="filter">
+                <span>&nbsp;</span>
+                <button
+                  className="button"
+                  onClick={() => void loadAcsAndGenerateTransitScores()}
+                  disabled={zillowRows.length === 0}
+                  title={zillowRows.length === 0 ? 'Load a Zillow CSV first' : 'Fetch ACS and generate transit proxy scores'}
+                >
+                  Load ACS metros → generate scores
+                </button>
+              </div>
+            </div>
+            <div className="hint">
+              Uses ACS table B08301: % commuting by public transportation (excluding taxicab), normalized to a 0–100 score.
+              Loaded: {acsLoadedCount} metros. Matched to Zillow: {acsMatchedCount}.
+            </div>
+            <div className="hint">
+              Tip: after generating scores, you can download the JSON and reuse it without re-fetching ACS.
+            </div>
+            <div style={{ marginTop: 10, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <button
+                className="button secondary"
+                onClick={() =>
+                  downloadJsonFile({
+                    filename: `transit_scores_acs_${acsYear}.json`,
+                    data: transitByMarket,
+                  })
+                }
+                disabled={Object.keys(transitByMarket).length === 0}
+              >
+                Download transit score JSON
+              </button>
             </div>
           </div>
 
